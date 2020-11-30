@@ -8,7 +8,9 @@
 #include <netdb.h>
 #include <poll.h>
 #include <errno.h>
-
+#ifdef __OS2__
+#include <libcx/net.h>
+#endif
 #include "util.h"
 
 #include "fastestmirror.h"

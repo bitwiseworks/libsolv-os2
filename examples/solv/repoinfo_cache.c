@@ -155,7 +155,11 @@ usecachedrepo(struct repoinfo *cinfo, const char *repoext, int mark)
       cinfo->extcookieset = 1;
     }
   if (mark)
+#ifndef __OS2__
     futimens(fileno(fp), 0);	/* try to set modification time */
+#else
+    futimes(fileno(fp), 0);	/* try to set modification time */
+#endif
   fclose(fp);
   return 1;
 }
