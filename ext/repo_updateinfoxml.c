@@ -134,7 +134,11 @@ datestr2timestamp(const char *date)
   memset(&tm, 0, sizeof(tm));
   if (!strptime(date, "%F%T", &tm))
     return 0;
+#ifdef __OS2__
+  return mktime(&tm);
+#else
   return timegm(&tm);
+#endif
 }
 
 /*

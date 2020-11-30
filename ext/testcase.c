@@ -2003,7 +2003,7 @@ testcase_read(Pool *pool, FILE *fp, const char *testcase, Queue *job, char **res
     }
   testcasedir = solv_strdup(testcase);
   s = strrchr(testcasedir, '/');
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__OS2__)
   buf = strrchr(testcasedir, '\\');
   if (!s || (buf && buf > s))
     s = buf;

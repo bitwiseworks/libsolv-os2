@@ -899,6 +899,7 @@ solv_fmemopen(const char *buf, size_t bufl, const char *mode)
   FILE *fp;
   if (*mode != 'r')
     return 0;
+#ifndef __OS2__
   if (!strcmp(mode, "rf"))
     {
       if (!(fp = fmemopen(0, bufl, "r+")))
@@ -914,6 +915,24 @@ solv_fmemopen(const char *buf, size_t bufl, const char *mode)
   else
     fp = fmemopen((char *)buf, bufl, "r");
   return fp;
+#else
+  char *tempnam;
+  char tempNamTpl[] = "/@unixroot/var/tmp/solvtmpXXXXXX";
+
+  tempnam = mktemp(tempNamTpl);
+  fp = fopen(tempnam, "w+b");
+  if (!fp)
+    {
+      return 0;
+    }
+  if (buf && bufl && fwrite(buf, bufl, 1, fp) != 1)
+    {
+      fclose(fp);
+      return 0;
+    }
+  rewind(fp);
+  return fp;
+#endif
 }
 
 #endif
