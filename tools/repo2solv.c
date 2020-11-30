@@ -169,10 +169,19 @@ read_plaindir_repo(Repo *repo, const char *dir)
 	  close(fds[1]);
 	}
       if (recursive)
+#ifdef __OS2__
+	execl("/@unixroot/usr/bin/find", "/@unixroot/usr/bin/find", ".", "-name", ".", "-o", "-name", ".*", "-prune", "-o", "-name", "*.delta.rpm", "-o", "-name", "*.patch.rpm", "-o", "-name", "*.rpm", "-a", "-type", "f", "-print0", (char *)0);
+#else
 	execl("/usr/bin/find", "/usr/bin/find", ".", "-name", ".", "-o", "-name", ".*", "-prune", "-o", "-name", "*.delta.rpm", "-o", "-name", "*.patch.rpm", "-o", "-name", "*.rpm", "-a", "-type", "f", "-print0", (char *)0);
+#endif
       else
+#ifdef __OS2__
+	execl("/@unixroot/usr/bin/find", "/@unixroot/usr/bin/find", ".", "-maxdepth", "1", "-name", ".", "-o", "-name", ".*", "-prune", "-o", "-name", "*.delta.rpm", "-o", "-name", "*.patch.rpm", "-o", "-name", "*.rpm", "-a", "-type", "f", "-print0", (char *)0);
+      perror("/@unixroot/usr/bin/find");
+#else
 	execl("/usr/bin/find", "/usr/bin/find", ".", "-maxdepth", "1", "-name", ".", "-o", "-name", ".*", "-prune", "-o", "-name", "*.delta.rpm", "-o", "-name", "*.patch.rpm", "-o", "-name", "*.rpm", "-a", "-type", "f", "-print0", (char *)0);
       perror("/usr/bin/find");
+#endif
       _exit(1);
     }
   close(fds[1]);

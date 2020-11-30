@@ -72,9 +72,15 @@ access_rootdir(struct rpmdbstate *state, const char *dir, int mode)
 static void
 detect_dbpath(struct rpmdbstate *state)
 {
+#ifdef __OS2__
+  state->dbpath = access_rootdir(state, "/@unixroot/var/lib/rpm", W_OK) == -1
+                  && access_rootdir(state, "/@unixroot/usr/share/rpm/Packages", R_OK) == 0
+                  ? "/@unixroot/usr/share/rpm" : "/@unixroot/var/lib/rpm";
+#else
   state->dbpath = access_rootdir(state, "/var/lib/rpm", W_OK) == -1
                   && access_rootdir(state, "/usr/share/rpm/Packages", R_OK) == 0
                   ? "/usr/share/rpm" : "/var/lib/rpm";
+#endif
 }
 
 static int
@@ -181,13 +187,25 @@ opendbenv(struct rpmdbstate *state)
 #if (defined(FEDORA) || defined(MAGEIA)) && (DB_VERSION_MAJOR >= 5 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5))
   dbenv->set_thread_count(dbenv, 8);
 #endif
+#ifdef __OS2__
+  state->dbpath = "/@unixroot/var/lib/rpm";
+#else
   state->dbpath = "/var/lib/rpm";
+#endif
   dbpath = solv_dupjoin(state->rootdir, state->dbpath, 0);
   if (access(dbpath, W_OK) == -1)
     {
+#ifdef __OS2__
+      if (access_rootdir(state, "/@unixroot/usr/share/rpm/Packages", R_OK) == 0)
+#else
       if (access_rootdir(state, "/usr/share/rpm/Packages", R_OK) == 0)
+#endif
 	{
+#ifdef __OS2__
+	  state->dbpath = "/@unixroot/usr/share/rpm";
+#else
 	  state->dbpath = "/usr/share/rpm";
+#endif
 	  free(dbpath);
 	  dbpath = solv_dupjoin(state->rootdir, state->dbpath, 0);
 	}

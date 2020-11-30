@@ -903,7 +903,11 @@ adddudata(Repodata *data, Id handle, RpmHead *rpmhead, char **dn, uint32_t *di, 
 	{
           Solvable *s = data->repo->pool->solvables + handle;
           if (s->arch == ARCH_SRC || s->arch == ARCH_NOSRC)
+#ifdef __OS2__
+	    did = repodata_str2dir(data, "/@unixroot/usr/src", 1);
+#else
 	    did = repodata_str2dir(data, "/usr/src", 1);
+#endif
 	  else
 	    did = repodata_str2dir_rooted(data, dn[i], 1);
 	}
@@ -923,10 +927,17 @@ is_filtered(const char *dir)
   /* the dirs always have a trailing / in rpm */
   if (strstr(dir, "bin/"))
     return 0;
+#ifdef __OS2__
+  if (!strncmp(dir, "/@unixroot/etc/", 15))
+    return 0;
+  if (!strcmp(dir, "/@unixroot/usr/lib/"))
+    return 2;
+#else
   if (!strncmp(dir, "/etc/", 5))
     return 0;
   if (!strcmp(dir, "/usr/lib/"))
     return 2;
+#endif
   return 1;
 }
 

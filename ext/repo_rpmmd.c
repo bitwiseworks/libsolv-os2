@@ -873,7 +873,11 @@ startElement(struct solv_xmlparser *xmlp, int state, const char *name, const cha
 	if (*str != '/')
 	  {
 	    if (s->arch == ARCH_SRC || s->arch == ARCH_NOSRC)
+#ifdef __OS2__
+	      str = "/@unixroot/usr/src";
+#else
 	      str = "/usr/src";
+#endif
 	    else
 	      {
 		int l = strlen(str) + 2;

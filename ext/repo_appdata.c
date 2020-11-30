@@ -205,7 +205,11 @@ add_missing_tags_from_desktop_file(struct parsedata *pd, Solvable *s, const char
   char *p, *p2, *p3;
   int inde = 0;
 
+#ifdef __OS2__
+  filepath = pool_tmpjoin(pool, "/@unixroot/usr/share/applications/", desktop_file, 0);
+#else
   filepath = pool_tmpjoin(pool, "/usr/share/applications/", desktop_file, 0);
+#endif
   if (pd->flags & REPO_USE_ROOTDIR)
     filepath = pool_prepend_rootdir_tmp(pool, filepath);
   if (!(fp = fopen(filepath, "r")))

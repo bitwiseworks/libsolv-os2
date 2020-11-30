@@ -397,7 +397,11 @@ repo_add_products(Repo *repo, const char *proddir, int flags)
     }
 
   /* code11 didn't work, try old code10 zyppdb */
+#ifdef __OS2__
+  fullpath = "/@unixroot/var/lib/zypp/db/products";
+#else
   fullpath = "/var/lib/zypp/db/products";
+#endif
   if (flags & REPO_USE_ROOTDIR)
     fullpath = pool_prepend_rootdir_tmp(repo->pool, fullpath);
   dir = opendir(fullpath);
@@ -405,7 +409,11 @@ repo_add_products(Repo *repo, const char *proddir, int flags)
     {
       closedir(dir);
       /* assume code10 style products */
+#ifdef __OS2__
+      return repo_add_zyppdb_products(repo, "/@unixroot/var/lib/zypp/db/products", flags);
+#else
       return repo_add_zyppdb_products(repo, "/var/lib/zypp/db/products", flags);
+#endif
     }
 
   /* code10/11 didn't work, try -release files parsing */

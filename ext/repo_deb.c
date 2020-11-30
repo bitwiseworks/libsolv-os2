@@ -531,7 +531,11 @@ int
 repo_add_debdb(Repo *repo, int flags)
 {
   FILE *fp;
+#ifdef __OS2__
+  const char *path = "/@unixroot/var/lib/dpkg/status";
+#else
   const char *path = "/var/lib/dpkg/status";
+#endif
   if (flags & REPO_USE_ROOTDIR)
     path = pool_prepend_rootdir_tmp(repo->pool, path);
   if ((fp = fopen(path, "r")) == 0)

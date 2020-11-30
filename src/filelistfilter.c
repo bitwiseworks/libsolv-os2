@@ -75,10 +75,17 @@ repodata_set_filelistfilter(Repodata *data)
 	  const char *g = data->localpool ? stringpool_id2str(&data->spool, id) : pool_id2str(data->repo->pool, id); 
 	  if (!strcmp(g, "*bin/*"))
 	    t |= 1;
+#ifdef __OS2__
+	  else if (!strcmp(g, "/@unixroot/etc/*"))
+	    t |= 2;
+	  else if (!strcmp(g, "/@unixroot/usr/lib/sendmail"))
+	    t |= 4;
+#else
 	  else if (!strcmp(g, "/etc/*"))
 	    t |= 2;
 	  else if (!strcmp(g, "/usr/lib/sendmail"))
 	    t |= 4;
+#endif
 	}
       if (t == 7)
 	{
@@ -158,10 +165,17 @@ repodata_filelistfilter_matches(Repodata *data, const char *str)
       /* '.*bin\/.*', '^\/etc\/.*', '^\/usr\/lib\/sendmail$' */
       if (strstr(str, "bin/"))
 	return 1;
+#ifdef __OS2__
+      if (!strncmp(str, "/@unixroot/etc/", 15))
+	return 1;
+      if (!strcmp(str, "/@unixroot/usr/lib/sendmail"))
+	return 1;
+#else
       if (!strncmp(str, "/etc/", 5))
 	return 1;
       if (!strcmp(str, "/usr/lib/sendmail"))
 	return 1;
+#endif
       return 0;
     }
   for (ff = data->filelistfilter; *ff; ff += 2)
