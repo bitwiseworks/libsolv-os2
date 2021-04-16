@@ -44,6 +44,9 @@ extern size_t solv_validutf8(const char *buf);
 extern char *solv_latin1toutf8(const char *buf);
 extern char *solv_replacebadutf8(const char *buf, int replchar);
 
+#ifdef __OS2__
+int alphasort(const void * a, const void * b);
+#endif
 
 static inline void *solv_extend(void *buf, size_t len, size_t nmemb, size_t size, size_t block)
 {
